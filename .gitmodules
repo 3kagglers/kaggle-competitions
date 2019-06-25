@@ -1,3 +1,6 @@
 [submodule "whales"]
 	path = whales
 	url = https://github.com/3kagglers/whale-challenge
+[submodule "titanic"]
+	path = titanic
+	url = https://github.com/3kagglers/titanic-challenge
