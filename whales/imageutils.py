@@ -1,6 +1,7 @@
 """Image util functions to operate."""
 
 import cv2
+import numpy as np
 
 
 def resize_image_scale(path_to_image, new_path_to_image, scale):
@@ -66,21 +67,30 @@ def get_contour(path_to_image, new_path_to_image):
     gray = cv2.cvtColor(blur, cv2.COLOR_BGR2GRAY)
 
     # Get contours
-    _, threshold = cv2.threshold(gray, 127, 255, 0)    
-    contours, hierarchy = cv2.findContours(threshold, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
-    
+    #_, threshold = cv2.threshold(gray, 127, 255, 0) 
+    _, threshold = cv2.threshold(gray,100,255,0)     
+    contours, hierarchy = cv2.findContours(threshold, cv2.RETR_LIST,
+                                           cv2.CHAIN_APPROX_SIMPLE)
+      
     # Get bigger contour
     contour_sizes = [(cv2.contourArea(contour),contour) for contour in contours]
-    biggest_contour = max(contour_sizes, key=lambda x: x[0])[1]
+    
+    contour_sizes = [(cv2.contourArea(c), c) for c in contours]
+    contour_sizes.sort(key=lambda x: x[0], reverse=True)
+    biggest_contour=contour_sizes[1][1]
 
+    x,y,w,h = cv2.boundingRect(biggest_contour)
+    cv2.rectangle(gray,(x,y),(x+w,y+h),(0,255,0),2)
+    
     cv2.drawContours(gray, biggest_contour, -1, (0, 255, 0), 3)
-
+    
+    #cv2.imwrite(new_path_to_image, threshold)
     cv2.imwrite(new_path_to_image, gray)
 
 if __name__ == '__main__':
 
     #IMAGE = './boop.png' # change here
-    IMAGE = 'test1.jpg'
+    IMAGE = 'test2.jpg'
     #TMP_IMG = 'resized_image.png'
 
     #resize_image_scale(IMAGE, TMP_IMG, 10)
